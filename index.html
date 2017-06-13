@@ -12,8 +12,11 @@
 
 
     <div id="screen">
-      <span class="info"></span>
-      <span class="main"></span>
+      <div class="info">
+        <span class="info-div" id="sign"></span>
+        <span class="info-div" id="memory"></span>
+      </div>
+      <span id="main"></span>
     </div>
     <div class="name-off">
       <button type="button" class="function" id="sq-root">√</button>
@@ -25,11 +28,11 @@
         <button type="button" class="number" id="0">0</button>
         <button type="button" class="number" id=".">.</button>
         <button type="button" class="special" id="equals">=</button>
-        <button type="button" class="on-clear" >C</button>
+        <button type="button" class="on-clear" id="clear">C</button>
         <button type="button" class="number" id="1">1</button>
         <button type="button" class="number" id="2" >2</button>
         <button type="button" class="number" id="3">3</button>
-        <button type="button" class="function" >+/-</button>
+        <button type="button" id="negate" >+/-</button>
         <button type="button" class="number" id="4">4</button>
         <button type="button" class="number" id="5">5</button>
         <button type="button" class="number" id="6">6</button>
@@ -37,16 +40,16 @@
         <button type="button" class="number" id="7" >7</button>
         <button type="button" class="number" id="8">8</button>
         <button type="button" class="number" id="9">9</button>
-        <button type="button" class="function" >MC</button>
-        <button type="button" class="function" >MR</button>
-        <button type="button" class="function" >M-</button>
-        <button type="button" class="function" >M+</button>
+        <button type="button" class="function" id="clear-mem" >MC</button>
+        <button type="button" class="function" id="call-mem" >MR</button>
+        <button type="button" class="function" id="from-mem" >M-</button>
+        <button type="button" class="function" id="to-mem" >M+</button>
       </div>
       <div class="operators">
-        <button type="button" class="operator">÷</button>
-        <button type="button" class="operator">x</button>
-        <button type="button" class="operator">-</button>
-        <button type="button" class="operator" id="plus-button">+</button>
+        <button type="button" class="operator" id="divide">÷</button>
+        <button type="button" class="operator" id="multiply">x</button>
+        <button type="button" class="operator" id="subtract">-</button>
+        <button type="button" class="operator" id="add">+</button>
 
       </div>
     </div>

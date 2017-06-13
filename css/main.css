@@ -18,12 +18,30 @@ button {
   height: 50px;
   border: 1px solid #181822;
   margin: 5px;
-  border-radius: 4px 4px 30% 30%;
+  /*border-radius: 4px 4px 30% 30%;*/
   font-size: 1.6em;
-  border-bottom: 3px solid #282832;
-  background-color: #383842;
-  color: #D1D1D3;
+  /*border-bottom: 3px solid #282832;*/
+  /*background-color: #383842;
+  color: #D1D1D3;*/
 }
+
+
+.info {
+  height: 100%;
+  width: 30px;
+  float: left;
+  z-index: 2;
+}
+
+.info-div {
+  border: 1px solid blue;
+  width: 100%;
+  height: 50%;
+  display: block;
+}
+
+
+
 
 button:active {
   border: 1px solid black;
@@ -37,19 +55,20 @@ button:active {
   border-width: 10px 15px 20px 15px;
   border-color: #616469;
   border-style: solid;
-  border-radius: 5%;
+  border-radius: 3%;
   background-color: #D8E4E4;
   color: black;
   font-size: 2.5em;
   text-align: right;
   padding: 10px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-content: center;
 }
 
-#screen .info {
-  height: 100%;
-  width: 30px;
-  float: left;
-  z-index: 2;
+#sign {
+  border: 1px solid red;
 }
 
 .name-off {
@@ -87,7 +106,7 @@ button:active {
   justify-content: space-around;
 }
 
-#plus-button {
+#add {
   height: 110px;
-  border-radius: 4px 4px 15% 15%;
+  /*border-radius: 4px 4px 15% 15%;*/
 }
