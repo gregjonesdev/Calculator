@@ -2,6 +2,8 @@ var on = false
 var readyToClear = false
 var toScreen = ""
 var memory = []
+var expression = []
+var lastKeyClass = "number"
 
 
 
@@ -39,6 +41,9 @@ cMem.addEventListener("click", clearMem)
 var clearIt = document.getElementById('clear')
 clearIt.addEventListener("click", clear)
 
+var equal = document.getElementById('equals')
+equal.addEventListener("click",evaluate)
+
 /**** Operators ****/
 
 var addIt = document.getElementById('add')
@@ -53,32 +58,84 @@ multiplyIt.addEventListener("click", multiply)
 var divideIt = document.getElementById('divide')
 divideIt.addEventListener("click", divide)
 
+var dec = document.getElementById('dec')
+dec.addEventListener("click", decimal)
+
+
+
 
 function add(){
   if(on) {
-    alert("adding?")
-  }
+    if(lastKeyClass==="operator") {
+      expression.pop()
+    }
+
+    if(lastKeyClass==="number") {
+      expression.push(screen.textContent)
+    }
+      expression.push("+")
+      console.log(expression)
+      readyToClear=true
+      lastKeyClass="operator"
+    }
 }
 
 function subtract(){
   if(on){
-    alert("subtracting?")
+    if(lastKeyClass==="operator") {
+      expression.pop()
+    }
+
+    if(lastKeyClass==="number") {
+      expression.push(screen.textContent)
+    }
+      expression.push("-")
+      console.log(expression)
+      readyToClear=true
+      lastKeyClass="operator"
   }
 }
 
 function multiply(){
   if (on){
-    alert("multiplying?")
+    if(lastKeyClass==="operator") {
+      expression.pop()
+    }
+
+    if(lastKeyClass==="number") {
+      expression.push(screen.textContent)
+    }
+    expression.push("x")
+    console.log(expression)
+    readyToClear=true
+    lastKeyClass="operator"
   }
 }
 
 function divide(){
   if(on) {
-    alert("dividing?")
+    if(lastKeyClass==="operator") {
+      expression.pop()
+    }
+
+    if(lastKeyClass==="number") {
+      expression.push(screen.textContent)
+    }
+    expression.push("/")
+    console.log(expression)
+    readyToClear=true
+    lastKeyClass="operator"
   }
 }
 
-
+function decimal(){
+  if (on){
+    if (!(screen.textContent.indexOf(".")>=0)) {
+      screen.textContent += "."
+      lastKeyClass="number"
+    }
+  }
+}
 
 
 
@@ -89,23 +146,32 @@ function addNumber(){
   if (on) {
     if(body.classList.value=="on") {
       console.log(this.id)
-      console.log(body.classList.value)
-      if(screen.textContent=="0") {
+      //console.log(body.classList.value)
+      if((screen.textContent=="0") || (readyToClear)) {
         screen.textContent = this.id
+        lastKeyClass="number"
+        readyToClear=false
       } else if (screen.textContent.length<9) {
         screen.textContent += this.id
+        console.log(expression)
+        lastKeyClass="number"
+        readyToClear=false
       }
     }
   }
 }
 
 function clear() {
-  screen.textContent="0"
+  if (on) {
+    screen.textContent="0"
+  }
 }
 
 function clearMem(){
-  memory = []
-  console.log(memory)
+  if (on) {
+    memory = []
+    console.log(memory)
+  }
 }
 
 function callMem(){
@@ -143,8 +209,9 @@ function fromMem(){
 
 function turnOff(){
   screen.textContent=""
-  neg.textContent = ""
+  //neg.textContent = ""
   memory = []
+  expression = []
   body.classList.remove('on')
   on=false
 }
@@ -154,18 +221,79 @@ function turnOn(){
   screen.textContent="0"
   body.classList.add('on')
   memory = []
+  expression = []
   console.log(memory)
 
 }
 
 /***** EVALUATE: THE MONEY MAKER *****/
 function evaluate(){
+  if(on) {
+    expression.push(screen.textContent)
+    console.log(expression)
+// First, change any "n", "x", "r" sequence to float n * float r
 //
-// for (i=exp.length-1; i>0; i--) {
-//     if (exp[i]==="x") {
-//         let temp = parseFloat(exp[i-1]*parseFloat(exp[i+1]))
-//         exp.splice(i-1,3,temp)
-//     }
+//  Start from back of array to not interfere with index, though this may not be necessary
 //
-// }
+for (i=expression.length-1; i>0; i--) {
+    if (expression[i]==="x") {
+        let temp = (parseFloat(expression[i-1])*(parseFloat(expression[i+1])))
+
+        expression.splice(i-1,3,temp)
+        console.log(expression)
+    }
+
+}
+
+//repeat for division
+
+for (i=expression.length-1; i>0; i--) {
+    if (expression[i]==="/") {
+        let temp = (parseFloat(expression[i-1])/(parseFloat(expression[i+1])))
+
+        expression.splice(i-1,3,temp)
+        console.log(expression)
+    }
+
+}
+
+
+
+
+
+
+//go through addition and subtraction
+
+for (i=expression.length-1; i>0; i--) {
+    if (expression[i]==="+") {
+        let temp = (parseFloat(expression[i-1])+(parseFloat(expression[i+1])))
+
+        expression.splice(i-1,3,temp)
+        console.log(expression)
+    }
+
+}
+
+for (i=expression.length-1; i>0; i--) {
+    if (expression[i]==="-") {
+        let temp = (parseFloat(expression[i-1])-(parseFloat(expression[i+1])))
+
+        expression.splice(i-1,3,temp)
+        console.log(expression)
+    }
+
+}
+
+
+//display answer, and "readyToClear"
+  if (!(expression == (1/0))) {
+    screen.textContent = expression
+  } else {
+    //screen.textContent = "ERR"
+    screen.innerHTML = '<i>ERR</i>'
+  }
+  expression = []
+  readyToClear=true
+
+  }
 }
