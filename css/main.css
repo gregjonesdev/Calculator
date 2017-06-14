@@ -121,6 +121,10 @@ button:active {
   justify-content: space-around;
 }
 
+.operator:hover {
+  color: #955468;
+}
+
 #add {
   height: 110px;
   border-radius: 4px 4px 15% 15%;
@@ -128,6 +132,14 @@ button:active {
 
 .on-clear {
   background-color: #955468;
+}
+
+.on-clear:hover {
+  background-color: #777;
+}
+
+.highlight {
+  background-color: red;
 }
 
 #memory {

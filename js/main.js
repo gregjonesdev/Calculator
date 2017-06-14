@@ -21,7 +21,7 @@ const body = document.querySelector('body')
 var offButton = document.getElementById("off-button")
 offButton.addEventListener("click", turnOff)
 
-var onButton = document.getElementById('on-button')
+var onButton = document.getElementById("on-button")
 onButton.addEventListener("click", turnOn)
 
 var neg = document.getElementById('negate')
@@ -122,17 +122,17 @@ function multiply(){
 
 function modulo(){
   if (on){
-  //   if(lastKeyClass==="operator") {
-  //     expression.pop()
-  //   }
-  //
-  //   if(lastKeyClass==="number") {
-  //     expression.push(screen.textContent)
-  //   }
-  //   expression.push("x")
-  //   console.log(expression)
-  //   readyToClear=true
-  //   lastKeyClass="operator"
+    if(lastKeyClass==="operator") {
+      expression.pop()
+    }
+
+    if(lastKeyClass==="number") {
+      expression.push(screen.textContent)
+    }
+    expression.push("%")
+    console.log(expression)
+    readyToClear=true
+    lastKeyClass="operator"
   }
 }
 
@@ -162,11 +162,6 @@ function decimal(){
     }
   }
 }
-
-
-
-
-
 
 function addNumber(){
   if (on) {
@@ -293,15 +288,9 @@ function evaluate(){
         expression.push(lastExpression[1])
       }
 
-
-
-      console.log(expression)
-
       // Saves last two string indices to repeat upon subsequent "equals" presses
       lastExpression.push(expression[expression.length-2])
       lastExpression.push(expression[expression.length-1])
-
-      console.log("LE line 344 : " + lastExpression)
 
       // First, change any "n", "x", "r" sequence to float n * float r
       //
@@ -310,6 +299,18 @@ function evaluate(){
       for (i=expression.length-1; i>0; i--) {
         if (expression[i]==="x") {
           let temp = (parseFloat(expression[i-1])*(parseFloat(expression[i+1])))
+
+          expression.splice(i-1,3,temp)
+          console.log(expression)
+        }
+      }
+
+      // repeat for modulo
+      for (i=expression.length-1; i>0; i--) {
+        if (expression[i]==="%") {
+          let a = parseFloat(expression[i-1])
+          let b = parseFloat(expression[i+1])
+          let temp = a-b*(Math.floor(a/b))
 
           expression.splice(i-1,3,temp)
           console.log(expression)
@@ -359,12 +360,5 @@ function evaluate(){
     }
     expression = []
     readyToClear=true
-
-}
-
-
-function color() {
-  //
-  //clearIt
 
 }
