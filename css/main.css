@@ -13,16 +13,23 @@
   background: transparent;
 }
 
+body {
+  border: 1px solid red;
+  width: max-content;
+  padding:80px 25px 25px 25px;
+  border-radius: 3px 3px 30px 30px;
+}
+
 button {
   width: 50px;
   height: 50px;
   border: 1px solid #181822;
   margin: 5px;
-  /*border-radius: 4px 4px 30% 30%;*/
+  border-radius: 4px 4px 30% 30%;
   font-size: 1.6em;
-  /*border-bottom: 3px solid #282832;*/
-  /*background-color: #383842;
-  color: #D1D1D3;*/
+  border-bottom: 3px solid #282832;
+  background-color: #383842;
+  color: #D1D1D3;
 }
 
 
@@ -34,7 +41,6 @@ button {
 }
 
 .info-div {
-  border: 1px solid blue;
   width: 100%;
   height: 50%;
   display: block;
@@ -67,14 +73,9 @@ button:active {
   align-content: center;
 }
 
-#sign {
-  border: 1px solid red;
-}
-
 .name-off {
   width: 310px;
   height: 45px;
-  border: 1px dotted red;
   display: flex;
   justify-content: flex-end;
 }
@@ -108,5 +109,13 @@ button:active {
 
 #add {
   height: 110px;
-  /*border-radius: 4px 4px 15% 15%;*/
+  border-radius: 4px 4px 15% 15%;
+}
+
+.on-clear {
+  background-color: #955468;
+}
+
+#memory {
+  font-size: .5em;
 }

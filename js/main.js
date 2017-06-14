@@ -6,8 +6,6 @@ var expression = []
 var lastKeyClass = "number"
 
 
-
-
 var screen = document.getElementById('main');
 
 const num = document.getElementsByClassName('number')
@@ -23,8 +21,8 @@ offButton.addEventListener("click", turnOff)
 var onButton = document.getElementById('on-button')
 onButton.addEventListener("click", turnOn)
 
-//var neg = document.getElementById('negate')
-//neg.addEventListener("click", negate)
+var neg = document.getElementById('negate')
+neg.addEventListener("click", negate)
 
 var toMem = document.getElementById('to-mem')
 toMem.addEventListener("click",addMem)
@@ -61,7 +59,11 @@ divideIt.addEventListener("click", divide)
 var dec = document.getElementById('dec')
 dec.addEventListener("click", decimal)
 
+var sqrt = document.getElementById('sq-root')
+sqrt.addEventListener("click", sqRoot)
 
+var perc = document.getElementById('percent')
+perc.addEventListener("click", percent)
 
 
 function add(){
@@ -151,7 +153,7 @@ function addNumber(){
         screen.textContent = this.id
         lastKeyClass="number"
         readyToClear=false
-      } else if (screen.textContent.length<9) {
+      } else if (screen.textContent.length<10) {
         screen.textContent += this.id
         console.log(expression)
         lastKeyClass="number"
@@ -171,6 +173,8 @@ function clearMem(){
   if (on) {
     memory = []
     console.log(memory)
+    document.getElementById('memory').textContent=""
+
   }
 }
 
@@ -186,8 +190,14 @@ function callMem(){
 
 function addMem(){
   if(on) {
-    memory.push(screen.textContent)
-    console.log("memory: " + memory)
+    if (memory.length<3) {
+      memory.push(screen.textContent)
+      if (memory.length>0) {
+        document.getElementById('memory').textContent="M"
+      }
+      console.log("memory: " + memory)
+      readyToClear=true
+    }
   }
 }
 
@@ -195,17 +205,33 @@ function fromMem(){
   if(on) {
     if (memory.length>0) {
       memory.pop()
+      if (!memory.length>0) {
+        document.getElementById('memory').textContent=""
+      }
       console.log(memory)
+
     }
   }
 }
 
-// function negate(){
-//   if(on) {
-//     let sign = document.getElementById('sign')
-//     sign.textContent="-"
-//   }
-// }
+function negate(){
+  if(on) {
+    screen.textContent *= -1
+//
+  }
+}
+
+function sqRoot() {
+  if(on) {
+    screen.textContent = Math.sqrt(screen.textContent)
+  }
+}
+
+function percent() {
+  if(on) {
+    screen.textContent /= 100
+  }
+}
 
 function turnOff(){
   screen.textContent=""
@@ -277,7 +303,6 @@ for (i=expression.length-1; i>0; i--) {
 for (i=expression.length-1; i>0; i--) {
     if (expression[i]==="-") {
         let temp = (parseFloat(expression[i-1])-(parseFloat(expression[i+1])))
-
         expression.splice(i-1,3,temp)
         console.log(expression)
     }
@@ -287,13 +312,22 @@ for (i=expression.length-1; i>0; i--) {
 
 //display answer, and "readyToClear"
   if (!(expression == (1/0))) {
+
     screen.textContent = expression
+    //console.log(expression.length.toString())
   } else {
     //screen.textContent = "ERR"
     screen.innerHTML = '<i>ERR</i>'
   }
   expression = []
   readyToClear=true
+}
 
-  }
+}
+
+
+function color() {
+  //
+  //clearIt
+
 }
