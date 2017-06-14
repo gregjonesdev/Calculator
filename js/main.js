@@ -4,6 +4,9 @@ var toScreen = ""
 var memory = []
 var expression = []
 var lastKeyClass = "number"
+var initialValue = 0
+var lastExpression =[]
+
 
 
 var screen = document.getElementById('main');
@@ -62,8 +65,11 @@ dec.addEventListener("click", decimal)
 var sqrt = document.getElementById('sq-root')
 sqrt.addEventListener("click", sqRoot)
 
+// var perc = document.getElementById('percent')
+// perc.addEventListener("click", percent)
+
 var perc = document.getElementById('percent')
-perc.addEventListener("click", percent)
+perc.addEventListener("click", modulo)
 
 
 function add(){
@@ -114,6 +120,24 @@ function multiply(){
   }
 }
 
+function modulo(){
+  if (on){
+  //   if(lastKeyClass==="operator") {
+  //     expression.pop()
+  //   }
+  //
+  //   if(lastKeyClass==="number") {
+  //     expression.push(screen.textContent)
+  //   }
+  //   expression.push("x")
+  //   console.log(expression)
+  //   readyToClear=true
+  //   lastKeyClass="operator"
+  }
+}
+
+
+
 function divide(){
   if(on) {
     if(lastKeyClass==="operator") {
@@ -146,6 +170,7 @@ function decimal(){
 
 function addNumber(){
   if (on) {
+    lastExpression =[]
     if(body.classList.value=="on") {
       console.log(this.id)
       //console.log(body.classList.value)
@@ -153,7 +178,7 @@ function addNumber(){
         screen.textContent = this.id
         lastKeyClass="number"
         readyToClear=false
-      } else if (screen.textContent.length<10) {
+      } else if (screen.textContent.length<9) {
         screen.textContent += this.id
         console.log(expression)
         lastKeyClass="number"
@@ -166,6 +191,7 @@ function addNumber(){
 function clear() {
   if (on) {
     screen.textContent="0"
+    lastExpression =[]
   }
 }
 
@@ -227,11 +253,12 @@ function sqRoot() {
   }
 }
 
-function percent() {
-  if(on) {
-    screen.textContent /= 100
-  }
-}
+/*** Superceded by Modulo Function ***/
+// function percent() {
+//   if(on) {
+//     screen.textContent /= 100
+//   }
+// }
 
 function turnOff(){
   screen.textContent=""
@@ -248,80 +275,90 @@ function turnOn(){
   body.classList.add('on')
   memory = []
   expression = []
+  lastExpression =[]
   console.log(memory)
 
 }
 
 /***** EVALUATE: THE MONEY MAKER *****/
 function evaluate(){
+
+
+  console.log("LE 284: " + lastExpression)
   if(on) {
-    expression.push(screen.textContent)
-    console.log(expression)
-// First, change any "n", "x", "r" sequence to float n * float r
-//
-//  Start from back of array to not interfere with index, though this may not be necessary
-//
-for (i=expression.length-1; i>0; i--) {
-    if (expression[i]==="x") {
-        let temp = (parseFloat(expression[i-1])*(parseFloat(expression[i+1])))
+      expression.push(screen.textContent)
 
-        expression.splice(i-1,3,temp)
-        console.log(expression)
+      if (lastExpression.length > 0) {
+        expression.push(lastExpression[0])
+        expression.push(lastExpression[1])
+      }
+
+
+
+      console.log(expression)
+
+      // Saves last two string indices to repeat upon subsequent "equals" presses
+      lastExpression.push(expression[expression.length-2])
+      lastExpression.push(expression[expression.length-1])
+
+      console.log("LE line 344 : " + lastExpression)
+
+      // First, change any "n", "x", "r" sequence to float n * float r
+      //
+      //  Start from back of array to not interfere with index, though this may not be necessary
+      //
+      for (i=expression.length-1; i>0; i--) {
+        if (expression[i]==="x") {
+          let temp = (parseFloat(expression[i-1])*(parseFloat(expression[i+1])))
+
+          expression.splice(i-1,3,temp)
+          console.log(expression)
+        }
+      }
+
+      //repeat for division
+
+      for (i=expression.length-1; i>0; i--) {
+        if (expression[i]==="/") {
+            let temp = (parseFloat(expression[i-1])/(parseFloat(expression[i+1])))
+
+            expression.splice(i-1,3,temp)
+            console.log(expression)
+        }
+      }
+
+      //go through addition and subtraction
+
+      for (i=expression.length-1; i>0; i--) {
+        if (expression[i]==="+") {
+            let temp = (parseFloat(expression[i-1])+(parseFloat(expression[i+1])))
+
+            expression.splice(i-1,3,temp)
+            console.log(expression)
+        }
+      }
+
+      for (i=expression.length-1; i>0; i--) {
+        if (expression[i]==="-") {
+          let temp = (parseFloat(expression[i-1])-(parseFloat(expression[i+1])))
+          expression.splice(i-1,3,temp)
+          console.log(expression)
+        }
+      }
     }
 
-}
 
-//repeat for division
 
-for (i=expression.length-1; i>0; i--) {
-    if (expression[i]==="/") {
-        let temp = (parseFloat(expression[i-1])/(parseFloat(expression[i+1])))
-
-        expression.splice(i-1,3,temp)
-        console.log(expression)
+    //display answer, and "readyToClear"
+    if (!(expression == (1/0))) {
+      if (expression <= 999999999) {
+        screen.textContent =        (Math.round(expression*10000000))/10000000
+      }
+    } else {
+      screen.innerHTML = '<i>ERR</i>'
     }
-
-}
-
-
-
-
-
-
-//go through addition and subtraction
-
-for (i=expression.length-1; i>0; i--) {
-    if (expression[i]==="+") {
-        let temp = (parseFloat(expression[i-1])+(parseFloat(expression[i+1])))
-
-        expression.splice(i-1,3,temp)
-        console.log(expression)
-    }
-
-}
-
-for (i=expression.length-1; i>0; i--) {
-    if (expression[i]==="-") {
-        let temp = (parseFloat(expression[i-1])-(parseFloat(expression[i+1])))
-        expression.splice(i-1,3,temp)
-        console.log(expression)
-    }
-
-}
-
-
-//display answer, and "readyToClear"
-  if (!(expression == (1/0))) {
-
-    screen.textContent = expression
-    //console.log(expression.length.toString())
-  } else {
-    //screen.textContent = "ERR"
-    screen.innerHTML = '<i>ERR</i>'
-  }
-  expression = []
-  readyToClear=true
-}
+    expression = []
+    readyToClear=true
 
 }
 
