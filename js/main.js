@@ -277,7 +277,7 @@ function turnOn(){
 
 /***** EVALUATE: THE MONEY MAKER *****/
 function evaluate(){
-
+if (on) {
 
   console.log("LE 284: " + lastExpression)
   if(on) {
@@ -360,5 +360,5 @@ function evaluate(){
     }
     expression = []
     readyToClear=true
-
+  }
 }
