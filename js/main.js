@@ -1,364 +1,368 @@
-var on = false
+// -----------------------------------------------------------------------------
+// Stateful
+// -----------------------------------------------------------------------------
+
+var poweredOn = false
 var readyToClear = false
-var toScreen = ""
+var toScreen = ''
 var memory = []
 var expression = []
-var lastKeyClass = "number"
+var lastKeyClass = 'number'
 var initialValue = 0
-var lastExpression =[]
+var lastExpression = []
 
+// -----------------------------------------------------------------------------
+// Util
+// -----------------------------------------------------------------------------
 
-
-var screen = document.getElementById('main');
-
-const num = document.getElementsByClassName('number')
-for(i=0; i<num.length; i++) {
-  num[i].addEventListener("click",addNumber)
+function byId (id) {
+  return document.getElementById(id)
 }
 
-const body = document.querySelector('body')
+function byClassName (className) {
+  return document.getElementsByClassName(className)
+}
 
-var offButton = document.getElementById("off-button")
-offButton.addEventListener("click", turnOff)
+function listen (id, eventType, fn) {
+  var el = byId(id)
 
-var onButton = document.getElementById("on-button")
-onButton.addEventListener("click", turnOn)
+  // sanity-check: el should exist
+  if (!el) return
 
-var neg = document.getElementById('negate')
-neg.addEventListener("click", negate)
+  el.addEventListener(eventType, fn)
+}
 
-var toMem = document.getElementById('to-mem')
-toMem.addEventListener("click",addMem)
+// -----------------------------------------------------------------------------
+// DOM Elements
+// -----------------------------------------------------------------------------
 
-var fMem = document.getElementById('from-mem')
-fMem.addEventListener("click",fromMem)
+const body = document.body
+const screenEl = byId('main')
+const memoryEl = byId('memory')
 
-var reMem = document.getElementById('call-mem')
-reMem.addEventListener("click",callMem)
+// -----------------------------------------------------------------------------
+// Events
+// -----------------------------------------------------------------------------
 
-var cMem = document.getElementById('clear-mem')
-cMem.addEventListener("click", clearMem)
+function addOperatorEvents () {
+  listen('add', 'click', clickAddBtn)
+  listen('subtract', 'click', clickSubtractBtn)
+  listen('multiply', 'click', clickMultiplyBtn)
+  listen('divide', 'click', clickDivideBtn)
+  listen('dec', 'click', clickDecimalBtn)
+  listen('sq-root', 'click', clickSqRootBtn)
+  listen('percent', 'click', clickPercentBtn)
+}
 
-var clearIt = document.getElementById('clear')
-clearIt.addEventListener("click", clear)
+function addNumberEvents () {
+  var numEls = byClassName('number')
+  for (var i = 0; i < numEls.length; i++) {
+    numEls[i].addEventListener('click', clickNumberBtn)
+  }
+}
 
-var equal = document.getElementById('equals')
-equal.addEventListener("click",evaluate)
+function addButtonEvents () {
+  listen('off-button', 'click', clickTurnOffBtn)
+  listen('on-button', 'click', clickTurnOnBtn)
+  listen('negate', 'click', clickNegateBtn)
+  listen('to-mem', 'click', clickAddMemBtn)
+  listen('from-mem', 'click', clickFromMemBtn)
+  listen('call-mem', 'click', clickCallMemBtn)
+  listen('clear-mem', 'click', clickClearMemBtn)
+  listen('clear', 'click', clickClearBtn)
+  listen('equals', 'click', clickEvaluateBtn)
+}
 
-/**** Operators ****/
+function addEvents () {
+  addButtonEvents()
+  addNumberEvents()
+  addOperatorEvents()
+}
 
-var addIt = document.getElementById('add')
-addIt.addEventListener("click", add)
+// -----------------------------------------------------------------------------
+// Operators
+// -----------------------------------------------------------------------------
 
-var subtractIt = document.getElementById('subtract')
-subtractIt.addEventListener("click", subtract)
+function clickAddBtn () {
+  if (!poweredOn) return
 
-var multiplyIt = document.getElementById('multiply')
-multiplyIt.addEventListener("click", multiply)
+  if (lastKeyClass === 'operator') {
+    expression.pop()
+  }
 
-var divideIt = document.getElementById('divide')
-divideIt.addEventListener("click", divide)
+  if (lastKeyClass === 'number') {
+    expression.push(screenEl.textContent)
+  }
+  expression.push('+')
+  console.log(expression)
+  readyToClear = true
+  lastKeyClass = 'operator'
+}
 
-var dec = document.getElementById('dec')
-dec.addEventListener("click", decimal)
+function clickSubtractBtn () {
+  if (!poweredOn) return
 
-var sqrt = document.getElementById('sq-root')
-sqrt.addEventListener("click", sqRoot)
+  if (lastKeyClass === 'operator') {
+    expression.pop()
+  }
 
-// var perc = document.getElementById('percent')
-// perc.addEventListener("click", percent)
+  if (lastKeyClass === 'number') {
+    expression.push(screenEl.textContent)
+  }
+  expression.push('-')
+  console.log(expression)
+  readyToClear = true
+  lastKeyClass = 'operator'
+}
 
-var perc = document.getElementById('percent')
-perc.addEventListener("click", modulo)
+function clickMultiplyBtn () {
+  if (!poweredOn) return
 
+  if (lastKeyClass === 'operator') {
+    expression.pop()
+  }
 
-function add(){
-  if(on) {
-    if(lastKeyClass==="operator") {
-      expression.pop()
-    }
+  if (lastKeyClass === 'number') {
+    expression.push(screenEl.textContent)
+  }
+  expression.push('x')
+  console.log(expression)
+  readyToClear = true
+  lastKeyClass = 'operator'
+}
 
-    if(lastKeyClass==="number") {
-      expression.push(screen.textContent)
-    }
-      expression.push("+")
+function clickPercentBtn () {
+  if (!poweredOn) return
+
+  if (lastKeyClass === 'operator') {
+    expression.pop()
+  }
+
+  if (lastKeyClass === 'number') {
+    expression.push(screenEl.textContent)
+  }
+  expression.push('%')
+  console.log(expression)
+  readyToClear = true
+  lastKeyClass = 'operator'
+}
+
+function clickDivideBtn () {
+  if (!poweredOn) return
+
+  if (lastKeyClass === 'operator') {
+    expression.pop()
+  }
+
+  if (lastKeyClass === 'number') {
+    expression.push(screenEl.textContent)
+  }
+  expression.push('/')
+  console.log(expression)
+  readyToClear = true
+  lastKeyClass = 'operator'
+}
+
+function clickDecimalBtn () {
+  if (!poweredOn) return
+
+  if (!(screenEl.textContent.indexOf('.') >= 0)) {
+    screenEl.textContent += '.'
+    lastKeyClass = 'number'
+  }
+}
+
+function clickNumberBtn () {
+  if (!poweredOn) return
+
+  lastExpression = []
+  if (body.classList.value == 'on') {
+    console.log(this.id)
+    if ((screenEl.textContent == '0') || (readyToClear)) {
+      screenEl.textContent = this.id
+      lastKeyClass = 'number'
+      readyToClear = false
+    } else if (screenEl.textContent.length < 9) {
+      screenEl.textContent += this.id
       console.log(expression)
-      readyToClear=true
-      lastKeyClass="operator"
-    }
-}
-
-function subtract(){
-  if(on){
-    if(lastKeyClass==="operator") {
-      expression.pop()
-    }
-
-    if(lastKeyClass==="number") {
-      expression.push(screen.textContent)
-    }
-      expression.push("-")
-      console.log(expression)
-      readyToClear=true
-      lastKeyClass="operator"
-  }
-}
-
-function multiply(){
-  if (on){
-    if(lastKeyClass==="operator") {
-      expression.pop()
-    }
-
-    if(lastKeyClass==="number") {
-      expression.push(screen.textContent)
-    }
-    expression.push("x")
-    console.log(expression)
-    readyToClear=true
-    lastKeyClass="operator"
-  }
-}
-
-function modulo(){
-  if (on){
-    if(lastKeyClass==="operator") {
-      expression.pop()
-    }
-
-    if(lastKeyClass==="number") {
-      expression.push(screen.textContent)
-    }
-    expression.push("%")
-    console.log(expression)
-    readyToClear=true
-    lastKeyClass="operator"
-  }
-}
-
-
-
-function divide(){
-  if(on) {
-    if(lastKeyClass==="operator") {
-      expression.pop()
-    }
-
-    if(lastKeyClass==="number") {
-      expression.push(screen.textContent)
-    }
-    expression.push("/")
-    console.log(expression)
-    readyToClear=true
-    lastKeyClass="operator"
-  }
-}
-
-function decimal(){
-  if (on){
-    if (!(screen.textContent.indexOf(".")>=0)) {
-      screen.textContent += "."
-      lastKeyClass="number"
+      lastKeyClass = 'number'
+      readyToClear = false
     }
   }
 }
 
-function addNumber(){
-  if (on) {
-    lastExpression =[]
-    if(body.classList.value=="on") {
-      console.log(this.id)
-      //console.log(body.classList.value)
-      if((screen.textContent=="0") || (readyToClear)) {
-        screen.textContent = this.id
-        lastKeyClass="number"
-        readyToClear=false
-      } else if (screen.textContent.length<9) {
-        screen.textContent += this.id
-        console.log(expression)
-        lastKeyClass="number"
-        readyToClear=false
-      }
-    }
-  }
+function clickClearBtn () {
+  if (!poweredOn) return
+
+  screenEl.textContent = '0'
+  lastExpression = []
 }
 
-function clear() {
-  if (on) {
-    screen.textContent="0"
-    lastExpression =[]
-  }
+function clickClearMemBtn () {
+  if (!poweredOn) return
+
+  memory = []
+  console.log(memory)
+  memoryEl.textContent = ''
 }
 
-function clearMem(){
-  if (on) {
-    memory = []
+function clickCallMemBtn () {
+  if (!poweredOn) return
+
+  if (memory.length > 0) {
+    screenEl.textContent = memory[memory.length - 1]
+    memory.pop()
     console.log(memory)
-    document.getElementById('memory').textContent=""
-
   }
 }
 
-function callMem(){
-  if(on) {
-    if (memory.length>0) {
-      screen.textContent = memory[memory.length-1]
-      memory.pop()
-      console.log(memory)
+function clickAddMemBtn () {
+  if (!poweredOn) return
+
+  if (memory.length < 3) {
+    memory.push(screenEl.textContent)
+    if (memory.length > 0) {
+      memoryEl.textContent = 'M'
     }
+    console.log('memory: ' + memory)
+    readyToClear = true
   }
 }
 
-function addMem(){
-  if(on) {
-    if (memory.length<3) {
-      memory.push(screen.textContent)
-      if (memory.length>0) {
-        document.getElementById('memory').textContent="M"
-      }
-      console.log("memory: " + memory)
-      readyToClear=true
+function clickFromMemBtn () {
+  if (!poweredOn) return
+
+  if (memory.length > 0) {
+    memory.pop()
+    if (!memory.length > 0) {
+      memoryEl.textContent = ''
     }
+    console.log(memory)
   }
 }
 
-function fromMem(){
-  if(on) {
-    if (memory.length>0) {
-      memory.pop()
-      if (!memory.length>0) {
-        document.getElementById('memory').textContent=""
-      }
-      console.log(memory)
+function clickNegateBtn () {
+  if (!poweredOn) return
 
-    }
-  }
+  screenEl.textContent *= -1
 }
 
-function negate(){
-  if(on) {
-    screen.textContent *= -1
-//
-  }
+function clickSqRootBtn () {
+  if (!poweredOn) return
+
+  screenEl.textContent = Math.sqrt(screenEl.textContent)
 }
 
-function sqRoot() {
-  if(on) {
-    screen.textContent = Math.sqrt(screen.textContent)
-  }
-}
-
-/*** Superceded by Modulo Function ***/
-// function percent() {
-//   if(on) {
-//     screen.textContent /= 100
-//   }
-// }
-
-function turnOff(){
-  screen.textContent=""
-  //neg.textContent = ""
+function clickTurnOffBtn () {
+  screenEl.textContent = ''
   memory = []
   expression = []
   body.classList.remove('on')
-  on=false
+  poweredOn = false
 }
 
-function turnOn(){
-  on = true
-  screen.textContent="0"
+function clickTurnOnBtn () {
+  poweredOn = true
+  screenEl.textContent = '0'
   body.classList.add('on')
   memory = []
   expression = []
-  lastExpression =[]
+  lastExpression = []
   console.log(memory)
-
 }
 
-/***** EVALUATE: THE MONEY MAKER *****/
-function evaluate(){
-if (on) {
+// -----------------------------------------------------------------------------
+// Evaluate
+// -----------------------------------------------------------------------------
 
-  console.log("LE 284: " + lastExpression)
-  if(on) {
-      expression.push(screen.textContent)
+function clickEvaluateBtn () {
+  if (!poweredOn) return
 
-      if (lastExpression.length > 0) {
-        expression.push(lastExpression[0])
-        expression.push(lastExpression[1])
-      }
+  console.log('LE 284: ' + lastExpression)
 
-      // Saves last two string indices to repeat upon subsequent "equals" presses
-      lastExpression.push(expression[expression.length-2])
-      lastExpression.push(expression[expression.length-1])
+  expression.push(screenEl.textContent)
 
-      // First, change any "n", "x", "r" sequence to float n * float r
-      //
-      //  Start from back of array to not interfere with index, though this may not be necessary
-      //
-      for (i=expression.length-1; i>0; i--) {
-        if (expression[i]==="x") {
-          let temp = (parseFloat(expression[i-1])*(parseFloat(expression[i+1])))
-
-          expression.splice(i-1,3,temp)
-          console.log(expression)
-        }
-      }
-
-      // repeat for modulo
-      for (i=expression.length-1; i>0; i--) {
-        if (expression[i]==="%") {
-          let a = parseFloat(expression[i-1])
-          let b = parseFloat(expression[i+1])
-          let temp = a-b*(Math.floor(a/b))
-
-          expression.splice(i-1,3,temp)
-          console.log(expression)
-        }
-      }
-
-      //repeat for division
-
-      for (i=expression.length-1; i>0; i--) {
-        if (expression[i]==="/") {
-            let temp = (parseFloat(expression[i-1])/(parseFloat(expression[i+1])))
-
-            expression.splice(i-1,3,temp)
-            console.log(expression)
-        }
-      }
-
-      //go through addition and subtraction
-
-      for (i=expression.length-1; i>0; i--) {
-        if (expression[i]==="+") {
-            let temp = (parseFloat(expression[i-1])+(parseFloat(expression[i+1])))
-
-            expression.splice(i-1,3,temp)
-            console.log(expression)
-        }
-      }
-
-      for (i=expression.length-1; i>0; i--) {
-        if (expression[i]==="-") {
-          let temp = (parseFloat(expression[i-1])-(parseFloat(expression[i+1])))
-          expression.splice(i-1,3,temp)
-          console.log(expression)
-        }
-      }
-    }
-
-
-
-    //display answer, and "readyToClear"
-    if (!(expression == (1/0))) {
-      if (expression <= 999999999) {
-        screen.textContent =        (Math.round(expression*10000000))/10000000
-      }
-    } else {
-      screen.innerHTML = '<i>ERR</i>'
-    }
-    expression = []
-    readyToClear=true
+  if (lastExpression.length > 0) {
+    expression.push(lastExpression[0])
+    expression.push(lastExpression[1])
   }
+
+  // Saves last two string indices to repeat upon subsequent "equals" presses
+  lastExpression.push(expression[expression.length - 2])
+  lastExpression.push(expression[expression.length - 1])
+
+  // First, change any "n", "x", "r" sequence to float n * float r
+  //
+  //  Start from back of array to not interfere with index, though this may not be necessary
+  //
+  for (i = expression.length - 1; i > 0; i--) {
+    if (expression[i] === 'x') {
+      let temp = (parseFloat(expression[i - 1]) * (parseFloat(expression[i + 1])))
+
+      expression.splice(i - 1, 3, temp)
+      console.log(expression)
+    }
+  }
+
+  // repeat for modulo
+  for (i = expression.length - 1; i > 0; i--) {
+    if (expression[i] === '%') {
+      let a = parseFloat(expression[i - 1])
+      let b = parseFloat(expression[i + 1])
+      let temp = a - b * (Math.floor(a / b))
+
+      expression.splice(i - 1, 3, temp)
+      console.log(expression)
+    }
+  }
+
+  // repeat for division
+  for (i = expression.length - 1; i > 0; i--) {
+    if (expression[i] === '/') {
+      let temp = (parseFloat(expression[i - 1]) / (parseFloat(expression[i + 1])))
+
+      expression.splice(i - 1, 3, temp)
+      console.log(expression)
+    }
+  }
+
+  // go through addition and subtraction
+  for (i = expression.length - 1; i > 0; i--) {
+    if (expression[i] === '+') {
+      let temp = (parseFloat(expression[i - 1]) + (parseFloat(expression[i + 1])))
+
+      expression.splice(i - 1, 3, temp)
+      console.log(expression)
+    }
+  }
+
+  for (i = expression.length - 1; i > 0; i--) {
+    if (expression[i] === '-') {
+      let temp = (parseFloat(expression[i - 1]) - (parseFloat(expression[i + 1])))
+      expression.splice(i - 1, 3, temp)
+      console.log(expression)
+    }
+  }
+
+  // display answer, and "readyToClear"
+  if (!(expression == (1 / 0))) {
+    if (expression <= 999999999) {
+      screenEl.textContent = (Math.round(expression * 10000000)) / 10000000
+    }
+  } else {
+    screenEl.innerHTML = '<i>ERR</i>'
+  }
+  expression = []
+  readyToClear = true
 }
+
+// -----------------------------------------------------------------------------
+// Init
+// -----------------------------------------------------------------------------
+
+function init () {
+  addEvents()
+  clickTurnOnBtn()
+}
+
+init()
